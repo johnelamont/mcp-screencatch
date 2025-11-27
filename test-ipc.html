@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test IPC</title>
+</head>
+<body>
+  <h1>IPC Test</h1>
+  <button id="testBtn">Click to Test IPC</button>
+  <div id="status"></div>
+
+  <script>
+    const status = document.getElementById('status');
+
+    // Test if electron is available
+    try {
+      const { ipcRenderer } = require('electron');
+      status.innerHTML += '<p>✅ Electron ipcRenderer is available</p>';
+
+      document.getElementById('testBtn').addEventListener('click', () => {
+        status.innerHTML += '<p>📤 Sending test message...</p>';
+        ipcRenderer.send('region-selected', { x: 100, y: 100, width: 200, height: 200 });
+        status.innerHTML += '<p>✅ Message sent!</p>';
+      });
+    } catch (error) {
+      status.innerHTML += '<p>❌ Error: ' + error.message + '</p>';
+    }
+  </script>
+</body>
+</html>
