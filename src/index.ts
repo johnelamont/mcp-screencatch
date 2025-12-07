@@ -8,6 +8,7 @@ import {
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 import { captureScreenRegion, listCaptures, setOutputDirectory } from "./capture.js";
+import { enhancedCaptureWorkflow } from "./enhanced-capture.js";
 
 // Default output directory
 let outputDirectory = process.env.SCREENCATCH_OUTPUT_DIR || process.cwd();
@@ -16,7 +17,7 @@ let outputDirectory = process.env.SCREENCATCH_OUTPUT_DIR || process.cwd();
 const tools: Tool[] = [
   {
     name: "capture_screen",
-    description: "Initiates an interactive screen capture interface. Allows user to select a region of their screen, capture it, and save with timestamp. Returns the path to the saved file.",
+    description: "LEGACY: Single-region screen capture. Use 'enhanced_capture' instead for better workflow with description, multi-region support, preview, and auto-merge.",
     inputSchema: {
       type: "object",
       properties: {
@@ -24,6 +25,25 @@ const tools: Tool[] = [
           type: "boolean",
           description: "Whether to prompt for another capture after this one",
           default: true,
+        },
+      },
+    },
+  },
+  {
+    name: "enhanced_capture",
+    description: "RECOMMENDED: Complete capture workflow with (1) Description input, (2) Multi-region capture in one session (Enter=continue, Shift+Enter=finish), (3) Auto-merge multiple captures. Use this for all screenshot requests unless user specifically asks for basic single capture.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        with_description: {
+          type: "boolean",
+          description: "Whether to prompt for description before capturing (default: true)",
+          default: true,
+        },
+        show_preview: {
+          type: "boolean",
+          description: "Whether to show preview and allow recapture (WARNING: blocks until user closes preview - default: false)",
+          default: false,
         },
       },
     },
@@ -87,6 +107,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "capture_screen": {
         const promptContinue = typeof args?.prompt_continue === 'boolean' ? args.prompt_continue : true;
         const result = await captureScreenRegion(outputDirectory, promptContinue);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case "enhanced_capture": {
+        const withDescription = typeof args?.with_description === 'boolean' ? args.with_description : true;
+        const showPreview = typeof args?.show_preview === 'boolean' ? args.show_preview : false;
+        const result = await enhancedCaptureWorkflow(outputDirectory, withDescription, showPreview);
         return {
           content: [
             {

@@ -9,6 +9,9 @@ dist/
 *.d.ts
 *.d.ts.map
 
+# Test data
+capture_2025*.png
+capture_2025*.json
 # Keep TypeScript source
 !src/**/*.ts
 
