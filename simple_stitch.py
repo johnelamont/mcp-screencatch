@@ -116,10 +116,13 @@ def main():
     print(f"\nDescription: {description or 'None'}")
     print("="*60)
     print("\nCapture workflow:")
-    print("  1. Press Enter to start a capture")
-    print("  2. Drag to select region, release mouse")
-    print("  3. Repeat for overlapping regions")
-    print("  4. Type 'done' when finished")
+    print("  1. Click back on THIS CONSOLE window")
+    print("  2. Press Enter to start a capture")
+    print("  3. Drag to select region, release mouse")
+    print("  4. Repeat for overlapping regions")
+    print("  5. Type 'done' when finished")
+    print("\nIMPORTANT: After scrolling or clicking other windows,")
+    print("           click back on this console before pressing Enter!")
     print("="*60)
 
     while True:
